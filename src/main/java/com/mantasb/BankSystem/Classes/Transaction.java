@@ -55,4 +55,9 @@ public class Transaction {
     public String getComment() {
         return comment;
     }
+
+    public String toString() {
+        String[] stringArray = new String[] {this.accountNumber, Double.toString(this.amount), this.beneficiary, this.operation.toString(), this.currency.toString(), this.comment + "\n"};
+        return String.join(",", stringArray);
+    }
 }

@@ -32,6 +32,10 @@ public class TransactionService {
         transactionRepository.saveAll(importedTransactions);
     }
 
+    public String getTransactionsAsCSVString(List <Transaction> transactions) {
+        return csvManager.getCSVStringFromTransactions(transactions);
+    }
+
     public Transaction createTransaction(String accountNumber, Double amount, String beneficiary, LocalDate operation, Currency currency, String comment) {
         Transaction transaction = new Transaction(accountNumber, amount, beneficiary, operation, currency,  comment);
 
