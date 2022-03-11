@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Currency;
 import java.util.List;
 
 @Service
@@ -27,6 +26,15 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
+    public List<Transaction> getTransactions(LocalDate from, LocalDate to) {
+        return transactionRepository.findByOperationBetween(from, to);
+    }
+
+    public Double getAccountBalance(String accountNumber, LocalDate from, LocalDate to) {
+        Double balance = transactionRepository.calculateAccountBalance(accountNumber, from, to);
+        return transactionRepository.calculateAccountBalance(accountNumber, from, to);
+    }
+
     public void importTransactions(MultipartFile file) throws IOException {
         List<Transaction> importedTransactions = csvManager.importCSV(file.getInputStream());
         transactionRepository.saveAll(importedTransactions);
@@ -34,12 +42,5 @@ public class TransactionService {
 
     public String getTransactionsAsCSVString(List <Transaction> transactions) {
         return csvManager.getCSVStringFromTransactions(transactions);
-    }
-
-    public Transaction createTransaction(String accountNumber, Double amount, String beneficiary, LocalDate operation, Currency currency, String comment) {
-        Transaction transaction = new Transaction(accountNumber, amount, beneficiary, operation, currency,  comment);
-
-        transactionRepository.save(transaction);
-        return transaction;
     }
 }
