@@ -12,6 +12,5 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
     List<Transaction> findByOperationBetween(LocalDate from, LocalDate to);
 
-    @Query("SELECT sum(t.amount) FROM Transaction t WHERE t.beneficiary = ?1 AND t.operation >= ?2 AND t.operation <= ?3")
-    Double calculateAccountBalance(String accountNumber, LocalDate from, LocalDate to);
+    List<Transaction> findByBeneficiaryAndOperationBetween(String accountNumber, LocalDate from, LocalDate to);
 }

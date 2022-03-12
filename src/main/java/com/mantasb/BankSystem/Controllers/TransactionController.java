@@ -11,7 +11,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transaction")
@@ -22,16 +24,28 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @GetMapping("/list")
-    public List<Transaction> getTransactions() {
-        return transactionService.getTransactions();
-    }
-
     @GetMapping("/getBalance")
-    public double getAccountBalance(@RequestParam String accountNumber, @RequestParam(required = false) String from, @RequestParam(required = false) String to) {
+    public Map<String, Double> getAccountBalance(@RequestParam String accountNumber, @RequestParam(required = false) String from, @RequestParam(required = false) String to) {
         LocalDate startDate = from == null ? LocalDate.EPOCH : LocalDate.parse(from);
         LocalDate endDate = to == null ? LocalDate.now() : LocalDate.parse(to);
-        return transactionService.getAccountBalance(accountNumber, startDate, endDate);
+
+        List <Transaction> listOfAccountTransactions = transactionService.getAccountBalance(accountNumber, startDate, endDate);
+
+        System.out.println(listOfAccountTransactions);
+
+        Map<String, Double> map = new HashMap();
+
+        for (Transaction transaction : listOfAccountTransactions) {
+            String currencyName = transaction.getCurrency().getCurrencyCode();
+            Double currentBalance = map.get(currencyName);
+            if (currentBalance != null) {
+                map.put(currencyName, currentBalance + transaction.getAmount());
+            } else {
+                map.put(currencyName, transaction.getAmount());
+            }
+        }
+
+        return map;
     }
 
     @PostMapping("/import")
@@ -48,7 +62,8 @@ public class TransactionController {
         LocalDate startDate = from == null ? LocalDate.EPOCH : LocalDate.parse(from);
         LocalDate endDate = to == null ? LocalDate.now() : LocalDate.parse(to);
 
-        File csvFile = new File("exportedFile.csv");
+        File csvFile = File.createTempFile("exportedFile", ".csv");
+        csvFile.deleteOnExit();
         FileWriter fileWriter = new FileWriter(csvFile);
         String fileContent = transactionService.getTransactionsAsCSVString(transactionService.getTransactions(startDate, endDate));
         fileWriter.write(fileContent);
