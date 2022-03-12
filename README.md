@@ -8,6 +8,7 @@ How to build and run:
 7. Run "java -jar BankSystem-0.0.1-SNAPSHOT.jar" command
 
 Endpoints:
+
 POST /transaction/import
 - "file":yourAttachedFile.csv
 
