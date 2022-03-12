@@ -25,7 +25,7 @@ public class CSVManager {
               String beneficiary = parsedLine.get(2);
               LocalDate operation = LocalDate.parse(parsedLine.get(3));
               Currency currency = Currency.getInstance(parsedLine.get(4));
-              String comment = parsedLine.get(5);
+              String comment = parsedLine.size() == 5 ? "" : parsedLine.get(5);
 
               Transaction transaction = new Transaction(accountNumber, amount, beneficiary, operation, currency, comment);
               importedTransactions.add(transaction);
